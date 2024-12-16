@@ -1,9 +1,7 @@
 (ns geo-v3.core
   (:require
-   [camel-snake-kebab.core :as csk]
-   [camel-snake-kebab.extras :as cske]
    [clojure.java.io :as io]
-   [clojure.java.data :as j]
+   [integrant.core :as ig]
    [taoensso.timbre :as log])
   (:import
    (com.maxmind.db
@@ -22,36 +20,41 @@
 
 (defn lookup [mmdb-reader ip]
   (or
-    (.get mmdb-reader (InetAddress/getByName ip) java.util.Map)
+    (try
+      (.get mmdb-reader (InetAddress/getByName ip) java.util.Map)
+      (catch Exception e
+        (log/error e :mmdb-lookup-failed)))
     (log/warn :mmdb-lookup-failed {:ip ip})))
 
-(defn java-map->clojure-map
-  [^java.util.Map java-map]
-  (->> java-map
-      (into {})
-      (cske/transform-keys csk/->kebab-case-keyword)))
+(defmethod ig/init-key ::mmdb [_ {:keys [file-url]}]
+  (io/file (io/resource file-url)))
 
-(def ipinfo-mmdb-file (io/file (io/resource "ip_geolocation_standard_sample.mmdb")))
-(def maxmind-mmdb-file (io/file (io/resource "GeoLite2-City-Test.mmdb")))
-(def ipinfo-reader (mmdb-reader ipinfo-mmdb-file))
-(def maxmind-reader (mmdb-reader maxmind-mmdb-file))
+(defmethod ig/init-key ::locator [_ {:keys [mmdb]}]
+  (mmdb-reader mmdb))
+
 
 (comment
 
-  (.hasNext (.networks maxmind-reader java.util.Map))
+  (require '[clojure.java.data :as j])
 
-  ,)
+  (def ipinfo-reader (-> "ip_geolocation_standard_sample.mmdb"
+                         io/resource
+                         io/file
+                         mmdb-reader))
 
-(comment
+  (def maxmind-reader (-> "GeoLite2-City-Test.mmdb"
+                          io/resource
+                          io/file
+                          mmdb-reader))
+
   ;; missing IPs
   (lookup maxmind-reader "2.1.160.216")
   (lookup ipinfo-reader "201.20.8.231")
 
   ;; hits
-  (java-map->clojure-map
-    (lookup ipinfo-reader "201.20.83.231"))
+  (lookup maxmind-reader "2.125.160.216")
 
-  (java-map->clojure-map
-    (lookup maxmind-reader "2.125.160.216"))
+  ;; attempt to iterate maxmind db records
+  (.hasNext (.networks maxmind-reader java.util.Map))
 
   ,)

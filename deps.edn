@@ -3,7 +3,8 @@
         org.clojure/java.data {:mvn/version "1.2.107"}
         camel-snake-kebab/camel-snake-kebab {:mvn/version "0.4.3"}
         com.maxmind.db/maxmind-db {:mvn/version "3.1.1"}
-        com.taoensso/timbre {:mvn/version "6.5.0"}}
+        com.taoensso/timbre {:mvn/version "6.5.0"}
+        integrant/integrant {:mvn/version "0.13.1"}}
  :aliase {:run-m {:main-opts ["-m" "geo-v3.geo-v3"]}
   :run-x {:ns-default geo-v3.geo-v3
           :exec-fn greet
