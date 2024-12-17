@@ -1,10 +1,4 @@
-(ns geo-v3.parser.ipinfo
-  (:require
-   [clojure.java.io :as io]
-   [geo-v3.core :as c]))
-
-(def ipinfo-mmdb-file (io/file (io/resource "ip_geolocation_standard_sample.mmdb")))
-(def ipinfo-reader (c/mmdb-reader ipinfo-mmdb-file))
+(ns geo-v3.parser.ipinfo)
 
 ;; TODO -- use malli for coercion
 (defn as-float [float-or-string]
@@ -18,12 +12,12 @@
     (int? int-or-string) int-or-string
     (string? int-or-string) (Integer/parseInt int-or-string)))
 
-(defn parse-data
+(defn parse-record
   [data]
   {:city         (get data "city")
    :country-code (get data "country")
    :region       (get data "region")
-   :timezone     (get data "time_zone")
+   :timezone     (get data "timezone")
    :latitude     (as-float (get data "lat"))
    :longitude    (as-float (get data "lng"))
    :postal-code  (get data "postal_code")
@@ -31,11 +25,18 @@
    })
 
 (comment
+
+  (require '[geo-v3.core :as c])
+  (require '[clojure.java.io :as io])
+
+  (def ipinfo-mmdb-file (io/file (io/resource "ip_geolocation_standard_sample.mmdb")))
+  (def ipinfo-reader (c/mmdb-reader ipinfo-mmdb-file))
+
   ;; missing IPs
   (c/lookup ipinfo-reader "201.20.8.231")
 
   ;; hits
-  (parse-data
+  (parse-record
     (c/lookup ipinfo-reader "201.20.83.231"))
 
   (c/lookup ipinfo-reader "201.20.83.231")

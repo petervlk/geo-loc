@@ -1,9 +1,12 @@
 {:paths ["src" "resources"]
- :deps {org.clojure/clojure {:mvn/version "1.11.1"}
-        org.clojure/java.data {:mvn/version "1.2.107"}
-        camel-snake-kebab/camel-snake-kebab {:mvn/version "0.4.3"}
+ :deps {org.clojure/clojure {:mvn/version "1.12.0"}
         com.maxmind.db/maxmind-db {:mvn/version "3.1.1"}
         com.taoensso/timbre {:mvn/version "6.5.0"}
+        http-kit/http-kit {:mvn/version "2.7.0"}
+        metosin/compojure-api {:mvn/version "2.0.0-alpha31" :exclusions [frankiesardo/linked medley/medley]}
+        ring/ring-core {:mvn/version "1.12.2"}
+        ring/ring-json {:mvn/version "0.5.1"}
+        dev.weavejester/medley {:mvn/version "1.8.1"}
         integrant/integrant {:mvn/version "0.13.1"}}
  :aliase {:run-m {:main-opts ["-m" "geo-v3.geo-v3"]}
   :run-x {:ns-default geo-v3.geo-v3

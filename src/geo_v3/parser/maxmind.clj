@@ -1,12 +1,6 @@
-(ns geo-v3.parser.maxmind
-  (:require
-   [clojure.java.io :as io]
-   [geo-v3.core :as c]))
+(ns geo-v3.parser.maxmind)
 
-(def maxmind-mmdb-file (io/file (io/resource "GeoLite2-City-Test.mmdb")))
-(def maxmind-reader (c/mmdb-reader maxmind-mmdb-file))
-
-(defn parse-data
+(defn parse-record
   "Creates a parser for standard maxmind mmdb datbase. Records have a
   nested structure."
   [data]
@@ -21,6 +15,13 @@
    })
 
 (comment
+
+  (require '[geo-v3.core :as c])
+  (require '[clojure.java.io :as io])
+
+  (def maxmind-mmdb-file (io/file (io/resource "GeoLite2-City-Test.mmdb")))
+  (def maxmind-reader (c/mmdb-reader maxmind-mmdb-file))
+
   ;; missing IPs
   (c/lookup maxmind-reader "2.1.160.216")
 
@@ -80,7 +81,7 @@
                            "zh-CN" "西伯克郡"
                            "ru"    "Западный Беркшир"}}]}
 
-  (parse-data
+  (parse-record
     (c/lookup maxmind-reader "2.125.160.216"))
 
   ,)

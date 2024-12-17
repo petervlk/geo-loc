@@ -29,13 +29,18 @@
 (defmethod ig/init-key ::mmdb [_ {:keys [file-url]}]
   (io/file (io/resource file-url)))
 
-(defmethod ig/init-key ::locator [_ {:keys [mmdb]}]
-  (mmdb-reader mmdb))
+(defmethod ig/init-key ::locator [_ {:keys [mmdb parser]}]
+  (let [reader (mmdb-reader mmdb)]
+    (fn [ip]
+     (some->> ip
+              (lookup reader)
+              parser))))
 
+(defmethod ig/assert-key ::locator [_ {:keys [mmdb parser]}]
+  (assert (some? mmdb) ":mmdb should reference a valid mmdb file")
+  (assert (some? parser) ":parser should not be nil"))
 
 (comment
-
-  (require '[clojure.java.data :as j])
 
   (def ipinfo-reader (-> "ip_geolocation_standard_sample.mmdb"
                          io/resource
@@ -53,8 +58,5 @@
 
   ;; hits
   (lookup maxmind-reader "2.125.160.216")
-
-  ;; attempt to iterate maxmind db records
-  (.hasNext (.networks maxmind-reader java.util.Map))
 
   ,)
