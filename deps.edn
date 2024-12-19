@@ -7,7 +7,9 @@
         ring/ring-core {:mvn/version "1.12.2"}
         ring/ring-json {:mvn/version "0.5.1"}
         dev.weavejester/medley {:mvn/version "1.8.1"}
-        integrant/integrant {:mvn/version "0.13.1"}}
+        integrant/integrant {:mvn/version "0.13.1"}
+        software.amazon.awssdk/s3 {:mvn/version "2.25.70"}
+        software.amazon.awssdk/sts {:mvn/version "2.25.70"}}
  :aliase {:run-m {:main-opts ["-m" "geo-v3.geo-v3"]}
   :run-x {:ns-default geo-v3.geo-v3
           :exec-fn greet
